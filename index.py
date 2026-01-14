@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 from uvicorn import run
 
 my_app = FastAPI(
@@ -6,6 +7,11 @@ my_app = FastAPI(
     description="Just testing my skills",
     version="0.0.1"
 )
+
+class STaskAdd(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    description: str | None = Field(default=None, min_length=0, max_length=300)
+    priority: int = Field(default=1, le=5)
 
 fake_tasks_db = [
     {"task_id": 1, "task_name": "Изучить Python"},
