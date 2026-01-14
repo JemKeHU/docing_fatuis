@@ -9,9 +9,24 @@ my_app = FastAPI(
 )
 
 class STaskAdd(BaseModel):
-    name: str = Field(min_length=2, max_length=100)
-    description: str | None = Field(default=None, min_length=0, max_length=300)
-    priority: int = Field(default=1, le=5)
+    name: str = Field(
+        min_length=2,
+        max_length=100,
+        description="Task Name"
+    )
+    
+    description: str | None = Field(
+        default=None, 
+        min_length=0, 
+        max_length=300,
+        description="Task Description"
+    )
+
+    priority: int = Field(
+        default=1, 
+        le=5,
+        description="Task Priority"    
+    )
 
 fake_tasks_db = [
     {"task_id": 1, "task_name": "Изучить Python"},
