@@ -14,7 +14,7 @@ class STaskAdd(BaseModel):
         max_length=100,
         description="Task Name"
     )
-    
+
     description: str | None = Field(
         default=None, 
         min_length=0, 
@@ -28,16 +28,7 @@ class STaskAdd(BaseModel):
         description="Task Priority"    
     )
 
-fake_tasks_db = [
-    {"task_id": 1, "task_name": "Изучить Python"},
-    {"task_id": 1, "task_name": "Изучить Python"},
-    {"task_id": 1, "task_name": "Изучить Python"},
-    {"task_id": 1, "task_name": "Изучить Python"},
-    {"task_id": 1, "task_name": "Изучить Python"},
-    {"task_id": 1, "task_name": "Изучить Python"},
-    {"task_id": 2, "task_name": "Подключить Базу Данных"},
-    {"task_id": 3, "task_name": "Выучить FastAPI"},
-]
+fake_tasks_db = []
 
 @my_app.get("/tasks/{task_id}")
 async def get_task_by_it(task_id: int):
@@ -56,6 +47,12 @@ async def get_tasks(limit: int = 10, offset: int = 0, keyword: str | None = None
     else:
         filtered_tasks = fake_tasks_db
     return filtered_tasks[offset:offset + limit]
+
+@my_app.post("/tasks")
+async def add_task(task: STaskAdd):
+    task_dict = task.model_dump()
+    fake_tasks_db.append(task_dict)
+    return {"ok": True, "message": "Task was added"}
 
 
 if __name__ == "__main__":
