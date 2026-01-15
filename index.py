@@ -40,7 +40,7 @@ async def get_tasks(limit: int = 10, offset: int = 0, keyword: str | None = None
         filtered_tasks = fake_tasks_db
     return filtered_tasks[offset:offset + limit]
 
-@my_app.post("/tasks")
+@my_app.post("/tasks", response_model=STaskAddResponse)
 async def add_task(task: STaskAdd):
     task_dict = task.model_dump()
     task_dict["id"] = randint(100, 999)
