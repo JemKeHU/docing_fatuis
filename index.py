@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from uvicorn import run
+from random import randint
 
 my_app = FastAPI(
     title="Test API",
@@ -9,24 +10,15 @@ my_app = FastAPI(
 )
 
 class STaskAdd(BaseModel):
-    name: str = Field(
-        min_length=2,
-        max_length=100,
-        description="Task Name"
-    )
+    name: str = Field(min_length=2, max_length=100, description="Task Name")
+    description: str | None = Field(default=None, min_length=0, max_length=300, description="Task Description")
+    priority: int = Field(default=1, le=5, description="Task Priority")
 
-    description: str | None = Field(
-        default=None, 
-        min_length=0, 
-        max_length=300,
-        description="Task Description"
-    )
+class STaskAddBase(STaskAdd):
+    pass
 
-    priority: int = Field(
-        default=1, 
-        le=5,
-        description="Task Priority"    
-    )
+class STaskAddResponse(STaskAddBase):
+    id: int = Field(...)
 
 fake_tasks_db = []
 
@@ -51,8 +43,9 @@ async def get_tasks(limit: int = 10, offset: int = 0, keyword: str | None = None
 @my_app.post("/tasks")
 async def add_task(task: STaskAdd):
     task_dict = task.model_dump()
+    task_dict["id"] = randint(100, 999)
     fake_tasks_db.append(task_dict)
-    return {"ok": True, "message": "Task was added"}
+    return {"ok": True, "message": "Task was added", "task": task_dict}
 
 
 if __name__ == "__main__":
