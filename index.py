@@ -59,3 +59,5 @@ async def add_task(task: STaskAdd):
 
 if __name__ == "__main__":
     run("index:my_app", host="127.0.0.1", port=8000, reload=True)
+
+# Fixing stuff
