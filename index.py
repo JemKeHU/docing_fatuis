@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, Field
 from uvicorn import run
 from random import randint
@@ -18,14 +18,19 @@ class STaskAddBase(STaskAdd):
     pass
 
 class STaskAddResponse(STaskAddBase):
-    id: int = Field(...)
+    id: int
+
+class TaskCreateResponse(BaseModel):
+    ok: bool
+    message: str
+    task: STaskAddResponse
 
 fake_tasks_db = []
 
 @my_app.get("/tasks/{task_id}")
-async def get_task_by_it(task_id: int):
+async def get_task_by_id(task_id: int):
     for task in fake_tasks_db:
-        if task["task_id"] == task_id:
+        if task["id"] == task_id:
             return task
     raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
 
@@ -40,12 +45,16 @@ async def get_tasks(limit: int = 10, offset: int = 0, keyword: str | None = None
         filtered_tasks = fake_tasks_db
     return filtered_tasks[offset:offset + limit]
 
-@my_app.post("/tasks", response_model=STaskAddResponse)
+@my_app.post("/tasks", response_model=TaskCreateResponse, status_code=status.HTTP_201_CREATED)
 async def add_task(task: STaskAdd):
     task_dict = task.model_dump()
     task_dict["id"] = randint(100, 999)
     fake_tasks_db.append(task_dict)
-    return {"ok": True, "message": "Task was added", "task": task_dict}
+    return {
+        "ok": True,
+        "message": "Task was Added",
+        "task": task_dict
+    }
 
 
 if __name__ == "__main__":
