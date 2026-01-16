@@ -8,8 +8,6 @@ my_app = FastAPI(
     version="0.0.1"
 )
 
-status.HTTP_418_IM_A_TEAPOT
-
 class STaskAdd(BaseModel):
     name: str = Field(min_length=2, max_length=100, description="Task Name")
     description: str | None = Field(default=None, min_length=0, max_length=300, description="Task Description")
@@ -40,7 +38,7 @@ async def get_tasks(limit: int = 10, offset: int = 0, keyword: str | None = None
     filtered_tasks = []
     if keyword:
         for task in fake_tasks_db:
-            if keyword.lower() in task["task_name"].lower():
+            if keyword.lower() in task["name"].lower():
                 filtered_tasks.append(task)
     else:
         filtered_tasks = fake_tasks_db
