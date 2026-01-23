@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from schemas import ItemBase, ItemCreate
+from schemas import ItemBase, ItemCreate, ItemChange
 
 item_router = APIRouter(
     prefix="/items",
@@ -36,6 +36,15 @@ async def post_item(item: ItemBase) -> ItemCreate:
     items.append(item_create)
     UNIQUE_ID += 1
     return item_create
+
+@item_router.put("/{item_id}", status_code=status.HTTP_200_OK)
+async def change_item_completely(item_id: int, new_item: ItemChange):
+    for item in items:
+        if item.id == item_id:
+            item.name = new_item.name
+            item.is_done = new_item.is_done
+            return item
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
 
 @item_router.patch("/{item_id}/{is_done}")
 async def change_done(item_id: int, is_done: bool):
