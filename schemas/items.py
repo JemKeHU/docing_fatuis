@@ -1,12 +1,20 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class ItemBase(BaseModel):
-    name: str = Field(min_length=2, max_length=100, description="Item name")
+    name: str = Field(min_length=1, max_length=100, description="Item name")
 
 class ItemCreate(ItemBase):
-    id: int
-    is_done: bool = False
+    pass
 
-class ItemChange(BaseModel):
-    name: str
+class ItemPut(BaseModel):
+    name: str = Field(min_length=1, max_length=100, description="Item name")
+    is_done: bool 
+
+class ItemPatch(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=100, description="Item name")
+    is_done: bool | None = None
+
+class ItemRead(ItemBase):
+    id: int
     is_done: bool
+    model_config = ConfigDict(from_attributes=True)
