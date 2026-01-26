@@ -1,8 +1,20 @@
 from fastapi import FastAPI
-from router import item_router
+from routers.items import item_router
 from uvicorn import run
+from models.items import ItemModel
+from contextlib import asynccontextmanager
+from database import engine, Model
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Model.metadata.create_all)
+    print("Database is ready")
+    yield
+    print("Shutting down server")
 
 app = FastAPI(
+    lifespan=lifespan,
     title="MyAPI",
     description="Learning to write backend",
     version="0.0.1"
